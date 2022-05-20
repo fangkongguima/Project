@@ -70,19 +70,32 @@ public class MainFrame extends JFrame implements KeyListener {
     private int RectWidth = 20;
 
     private Timer timer;
-    private int score = 0;//record score
+    private int score = 0;//记录成绩
     Random random = new Random();
     private int curShapeType = -1;
-    private int curShapeState = -1;//sets the current shape type and current shape state
+    private int curShapeState = -1;//设置当前的形状类型和当前的形状状态
     private int nextShapeType = -1;
-    private int nextShapeState = -1;//sets the type and status of the next block group to appear
+    private int nextShapeState = -1;//设置下一次出现的方块组的类型和状态
 
     private int posX = 0;
     private int posY = 0;
 
-    public void CreateRect() //create block--if the current block type and state exist, set the next block type, if not, set the current block type and set the next block type and state
+    //record the pause times
+    private int pauseTimes;
+    //judge pause
+    private boolean gamePause;
+    //show the game state
+    private JLabel gameState;
+    //show the score
+    private JLabel gameScore;
+    //judge running
+    private static boolean judgeRun;
+    //储存方块变量
+    int rect;
+
+    public void CreateRect() //创建方块---如果当前的方块类型和状态都存在就设置下一次的，如果不存在就设置当前的并且设置下一次的状态和类型
     {
-        if(curShapeType == -1 && curShapeState == -1)//the current block status is 1, indicating that the game has just started
+        if(curShapeType == -1 && curShapeState == -1)//当前的方块状态都为1，表示游戏才开始
         {
             curShapeType = random.nextInt(shapes.length);
             curShapeState = random.nextInt(shapes[0].length);
@@ -98,21 +111,11 @@ public class MainFrame extends JFrame implements KeyListener {
         posY = 1;//墙的左上角创建方块
     }
 
-    //show the game state
-    private JLabel gameState;
-    //show the score
-    private JLabel gameScore;
-    //judge running
-    private static boolean judgeRun;
-    //储存方块变量
-    int rect;
-
     public static void main(String[] args) {
         MainFrame mainFrame = new MainFrame();
-        String filepath = "project\\src\\Tetris Background Music.wav";
+//        String filepath = "project\\src\\Tetris Background Music.wav";
         Music musicObject = new Music();
-        musicObject.playMusic(filepath);
-        CreateRect();
+        musicObject.playMusic("project\\src\\Tetris Background Music.wav");
     }
 
     public void initiateFrame() {
@@ -126,18 +129,6 @@ public class MainFrame extends JFrame implements KeyListener {
         setSize(1200, 800);
         //make the frame middle
         this.setLocationRelativeTo(null);
-
-       /*
-        Toolkit kit = Toolkit.getDefaultToolkit();
-        Dimension screenSize = kit.getScreenSize();
-        int screenWidth = screenSize.width;
-        int screenHeight = screenSize.height;
-        int height = this.getHeight();
-        int width = this.getWidth();
-        setLocation(screenWidth/2-width/2,screenHeight/2-height/2);
-        */
-
-
         //close the frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //make it visible
@@ -201,7 +192,7 @@ public class MainFrame extends JFrame implements KeyListener {
         //TODO: more about initiate
         JPanel gameArea = new JPanel();
         gameArea.setLayout(new GridLayout(gameRow, gameColumn, 2, 2));
-        //初始化游戏面板
+        //initiate the panel
         for (int i = 0; i < text.length; i++) {
             for (int j = 0; j < text[i].length; j++) {
                 //set the number of rows and columns of textArea
@@ -215,6 +206,7 @@ public class MainFrame extends JFrame implements KeyListener {
                     text[i][j].setBackground(Color.black);
                     data[i][j] = 1;
                 }
+                //set 4 rows on the top as black
                 if (i == 0 || i ==1 || i ==2 || i ==3){
                     text[i][j].setBackground(Color.black);
                 }
@@ -242,23 +234,6 @@ public class MainFrame extends JFrame implements KeyListener {
         gameState.setFont(new Font ("Verdana", Font.BOLD + Font.PLAIN, 18));
     }
 
-//    public void generate() {
-//        //random generate Shape
-//        int number = (int)(Math.random()*7);
-//        switch (number) {
-//            case 0: return Square;
-//            case 1: return Line;
-//            case 2: return Tshape;
-//            case 3: shapes.add(MLshape);return MLshape;
-//            case 4: shapes.add(Lshape);return Lshape;
-//            case 5: shapes.add(Sshape);return Sshape;
-//            case 6: shapes.add(Zshape);return Zshape;
-//            default: return null;
-//        }
-//    }
-
-
-
     private void setPanel(JPanel panel1, JPanel panel2) {
         panel1.setVisible(false);
         add(panel2);
@@ -273,23 +248,54 @@ public class MainFrame extends JFrame implements KeyListener {
         panel.setBackground(color);
         //TODO: panel.setMore...
         return panel;
-    }
-
-     */
-
+    }     */
 
     @Override
     public void keyTyped(KeyEvent e) {
 
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
+        @Override
+        public void keyPressed (KeyEvent e){
+            //control the pause of the game
+            int keyCode = e.getKeyCode();
+            if (keyCode == KeyEvent.VK_P) {
+                //judge whether the game is running
+                if (!judgeRun) {
+                    return;
+                }
+                pauseTimes++;
+                //judge the pauseTimes, if pauseTimes == 1, pause
+                if (pauseTimes == 1) {
+                    gamePause = true;
+                    gameState.setText("Game State: Pausing");
+                }
+                //judge the pauseTimes, if pauseTimes == 2, restart
+                if (pauseTimes == 2) {
+                    gamePause = false;
+                    pauseTimes = 0;
+                    gameState.setText("Game State: Playing");
+                }
+            }
+            if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) {
 
-    }
+            }
+            if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) {
 
-    @Override
-    public void keyReleased(KeyEvent e) {
+            }
+            if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
 
-    }
+            }
+            if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
+
+            }
+            if (keyCode == KeyEvent.VK_ENTER) {
+                CreateRect();
+            }
+        }
+
+        @Override
+        public void keyReleased (KeyEvent e){
+
+        }
 }
