@@ -70,19 +70,19 @@ public class MainFrame extends JFrame implements KeyListener {
     private int RectWidth = 20;
 
     private Timer timer;
-    private int score = 0;//记录成绩
+    private int score = 0;//record score
     Random random = new Random();
     private int curShapeType = -1;
-    private int curShapeState = -1;//设置当前的形状类型和当前的形状状态
+    private int curShapeState = -1;//sets the current shape type and current shape state
     private int nextShapeType = -1;
-    private int nextShapeState = -1;//设置下一次出现的方块组的类型和状态
+    private int nextShapeState = -1;//sets the type and status of the next block group to appear
 
     private int posX = 0;
     private int posY = 0;
 
-    public void CreateRect() //创建方块---如果当前的方块类型和状态都存在就设置下一次的，如果不存在就设置当前的并且设置下一次的状态和类型
+    public void CreateRect() //create block--if the current block type and state exist, set the next block type, if not, set the current block type and set the next block type and state
     {
-        if(curShapeType == -1 && curShapeState == -1)//当前的方块状态都为1，表示游戏才开始
+        if(curShapeType == -1 && curShapeState == -1)//the current block status is 1, indicating that the game has just started
         {
             curShapeType = random.nextInt(shapes.length);
             curShapeState = random.nextInt(shapes[0].length);
