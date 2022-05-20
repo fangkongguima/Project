@@ -77,8 +77,8 @@ public class MainFrame extends JFrame implements KeyListener {
     private int nextShapeType = -1;
     private int nextShapeState = -1;//设置下一次出现的方块组的类型和状态
 
-    private int posx = 0;
-    private int posy = 0;
+    private int posX = 0;
+    private int posY = 0;
 
     public void CreateRect() //创建方块---如果当前的方块类型和状态都存在就设置下一次的，如果不存在就设置当前的并且设置下一次的状态和类型
     {
@@ -94,8 +94,8 @@ public class MainFrame extends JFrame implements KeyListener {
         }
         nextShapeType = random.nextInt(shapes.length);
         nextShapeState = random.nextInt(shapes[0].length);
-        posx = 0;
-        posy = 1;//墙的左上角创建方块
+        posX = 0;
+        posY = 1;//墙的左上角创建方块
     }
 
     //show the game state
