@@ -34,7 +34,7 @@ public class Tetris extends JFrame implements KeyListener {
 
 
     public void initWindow() {
-        this.setSize(600, 800);
+        this.setSize(880, 1000);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -84,20 +84,26 @@ public class Tetris extends JFrame implements KeyListener {
 
     public void initExplainPanel() {
         JPanel explain_right = new JPanel();
-        explain_right.setLayout(new GridLayout(8, 1));
+        explain_right.setLayout(new GridLayout(10, 1));
 
         gameState.setForeground(Color.BLUE);
         gameScore.setForeground(Color.RED);
+        explain_right.add(new JLabel(" "));
         explain_right.add(gameState);
         explain_right.add(gameScore);
 
         explain_right.add(new JLabel(" "));
-        explain_right.add(new JLabel(" "));
+        explain_right.add(new JLabel(" HOW TO PLAY:"));
+        explain_right.getComponent(4).setForeground(new Color(85,107,47));
+        explain_right.getComponent(4).setFont(new Font("Verdana", Font.BOLD + Font.ITALIC, 22));
         explain_right.add(new JLabel(" Move Left: 'A' or 'LEFT'"));
         explain_right.add(new JLabel(" Move Right: 'D' or 'RIGHT'"));
         explain_right.add(new JLabel(" Move Down: 'S' or 'DOWN'"));
         explain_right.add(new JLabel(" Rotate Clockwise: 'W' or 'UP'"));
-
+        for (int i = 5; i < 9; i++) {
+            explain_right.getComponent(i).setForeground(new Color(199,21,133));
+            explain_right.getComponent(i).setFont(new Font("Verdana", Font.BOLD + Font.ITALIC, 18));
+        }
         this.add(explain_right, BorderLayout.EAST);
     }
 
@@ -119,7 +125,9 @@ public class Tetris extends JFrame implements KeyListener {
         text = new JTextArea[gameRow][gameColumn];
         data = new int[gameRow][gameColumn];
         gameState = new JLabel("Game State: Playing");
+        gameState.setFont(new Font ("Verdana", Font.BOLD+ Font.ITALIC, 22));
         gameScore = new JLabel("Game Score: " + score);
+        gameScore.setFont(new Font ("Verdana", Font.BOLD+ Font.ITALIC, 22));
         initGamePanel();
         initExplainPanel();
         initWindow();
