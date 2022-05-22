@@ -93,7 +93,7 @@ public class Tetris extends JFrame implements KeyListener {
         explain_right.add(gameScore);
 
         explain_right.add(new JLabel(" "));
-        explain_right.add(new JLabel(" HOW TO PLAY:"));
+        explain_right.add(new JLabel(" HOW TO PLAY: "));
         explain_right.getComponent(4).setForeground(new Color(85,107,47));
         explain_right.getComponent(4).setFont(new Font("Verdana", Font.BOLD + Font.ITALIC, 22));
         explain_right.add(new JLabel(" Move Left: 'A' or 'LEFT'"));
