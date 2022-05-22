@@ -1,8 +1,15 @@
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Tetris extends JFrame implements KeyListener {
 
@@ -33,6 +40,7 @@ public class Tetris extends JFrame implements KeyListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setTitle("Tetris");
+
 
 
        /*
@@ -93,6 +101,20 @@ public class Tetris extends JFrame implements KeyListener {
         this.add(explain_right, BorderLayout.EAST);
     }
 
+
+//    public void initStartGame() {
+//        JPanel StartPanel = new JPanel();
+//        JButton button = new JButton("选择文件");
+//        // 监听button的选择路径
+//        button.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//
+//            }
+//        });
+//        StartPanel.add(button);
+//    }
+
     public Tetris() {
         text = new JTextArea[gameRow][gameColumn];
         data = new int[gameRow][gameColumn];
@@ -103,15 +125,18 @@ public class Tetris extends JFrame implements KeyListener {
         initWindow();
         isrunning = true;
         allRect = new int[]{0x0066, 0x4444, 0x0446, 0x0226, 0x0264, 0x0462, 0x0464};
-
     }
 
     public static void main(String[] args) throws InterruptedException {
         Tetris tetris = new Tetris();
+        try {
+            MusicPlayer player = new MusicPlayer("src\\Tetris Background Music.wav");
+            player.setVolumn(6f).play();
+            player.setLoop(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         tetris.game_begin();
-    //    String filepath = "C:\\Users\\17375\\IdeaProjects\\untitled3\\src\\Tetris Background Music.wav";
-    //    Music musicObject = new Music();
-    //    musicObject.playMusic(filepath);
     }
 
     public void game_begin() throws InterruptedException {
@@ -205,25 +230,26 @@ public class Tetris extends JFrame implements KeyListener {
         for (int i=m; i>0;i--) {
             for (int j = 1; j < (gameColumn-1); j++) {
                 data[i][j]=data[i-1][j];
-             //   text[i][j].getBackground()=text[i-1][j].getBackground();
+//                text[i][j].getBackground() == text[i-1][j].getBackground();
             }
         }
-        //reflesh(m);
+        flash(m);
         score = score + 100;
         gameScore.setText("Game Score: " + score);
     }
 
-    /*
-    public void reflesh(int m){
-        for (int i=m; i>3;i++) {
+    public void flash(int m){
+        for (int i=m; i>3;i--) {
             for (int j = 0; j < (gameColumn-1); j++) {
-                if (data[i][j]!=1){
+                if (data[i][j] == 0){
                     text[i][j].setBackground(Color.GRAY);
+                }
+                else if (data[i][j] == 2) {
+                    text[i][j].setBackground(Color.BLACK);
                 }
             }
         }
     }
-    */
 
     public void fall(int m, int n){
         if(m>0){
@@ -255,7 +281,29 @@ public class Tetris extends JFrame implements KeyListener {
         a:for (int i=3;i>=0;i--){
             b:for (int j = 0; j < 4; j++){
                 if ((temp&rect)!=0){
-                    text[m][n].setBackground(Color.blue);
+                    Color color = Color.red;
+                    if (rect == 0x0066){
+                        color = Color.red;
+                    }
+                    else if (rect == 0x4444) {
+                        color = Color.cyan;
+                    }
+                    else if (rect == 0x0446) {
+                        color = Color.green;
+                    }
+                    else if (rect == 0x0226) {
+                        color = Color.blue;
+                    }
+                    else if (rect == 0x0264) {
+                        color = Color.orange;
+                    }
+                    else if (rect == 0x0462) {
+                        color = Color.yellow;
+                    }
+                    else if (rect == 0x0464){
+                        color = Color.magenta;
+                    }
+                    text[m][n].setBackground(color);
                 }
                 n++;
                 temp >>=1;
@@ -264,9 +312,6 @@ public class Tetris extends JFrame implements KeyListener {
             n=n-4;
         }
     }
-
-
-
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -280,12 +325,11 @@ public class Tetris extends JFrame implements KeyListener {
                 gameState.setText("Game State: Pause");
                 String [] options = {"RESUME","OPTIONS","HOW TO PLAY","QUIT"};
                 int n = JOptionPane.showOptionDialog(null,"Pause"," ",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
-             //   JOptionPane.showMessageDialog(null,"游戏暂停");
+                //   JOptionPane.showMessageDialog(null,"游戏暂停");
             }
             if (pause_times%2==0){
                 game_pause=false;
                 gameState.setText("Game State: Playing");
-
             }
         }
 
@@ -293,9 +337,7 @@ public class Tetris extends JFrame implements KeyListener {
             if (!isrunning){
                 return;
             }
-
         }
-
     }
 
     @Override
@@ -352,6 +394,8 @@ public class Tetris extends JFrame implements KeyListener {
             x++;
             draw(x, y);
         }
+
+
     }
 
     @Override
