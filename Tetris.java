@@ -155,6 +155,17 @@ public class Tetris extends JFrame implements KeyListener {
             game_run();
         }
         gameState.setText("Game State: Game over");
+        String [] options = {"RESTART","BACK TO MENU","QUIT THE GAME"};
+        int n = JOptionPane.showOptionDialog(null,"YOUR SCORE: " + score," ",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
+        if (n == 0) {
+            isrunning = true;
+        }
+        else if (n == 1){
+
+        }
+        else if (n == 2 || n == -1){
+
+        }
     }
 
     public void ranRect() {
@@ -323,29 +334,6 @@ public class Tetris extends JFrame implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-        if (e.getKeyChar()==' '){
-            if (!isrunning){
-                return;
-            }
-            pause_times++;
-            if (pause_times%2==1) {
-                game_pause = true;
-                gameState.setText("Game State: Pause");
-                String [] options = {"RESUME","OPTIONS","HOW TO PLAY","QUIT"};
-                int n = JOptionPane.showOptionDialog(null,"Pause"," ",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
-                //   JOptionPane.showMessageDialog(null,"游戏暂停");
-            }
-            if (pause_times%2==0){
-                game_pause=false;
-                gameState.setText("Game State: Playing");
-            }
-        }
-
-        if (e.getKeyCode()==38||e.getKeyCode()==87){
-            if (!isrunning){
-                return;
-            }
-        }
     }
 
     @Override
@@ -403,7 +391,32 @@ public class Tetris extends JFrame implements KeyListener {
             draw(x, y);
         }
 
+        if (e.getKeyCode()==KeyEvent.VK_P){
+            if (!isrunning){
+                return;
+            }
+            pause_times++;
+            game_pause = true;
+            gameState.setText("Game State: Pause");
+            String [] options = {"RESUME","SAVE AND LOAD","BACK TO MENU"};
+            int n = JOptionPane.showOptionDialog(null,"PAUSED"," ",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
+            if (n == 0 || n == -1) {
+                game_pause = false;
+                gameState.setText("Game State: Playing");
+            }
+            else if (n == 1){
 
+            }
+            else if (n == 2){
+
+            }
+        }
+
+        if (e.getKeyCode()==38||e.getKeyCode()==87){
+            if (!isrunning){
+                return;
+            }
+        }
     }
 
     @Override
