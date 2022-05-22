@@ -154,6 +154,11 @@ public class Tetrisd extends JFrame implements KeyListener {
             e.printStackTrace();
         }
         tetris.game_begin();
+        while (true) {
+            tetris.dispose();
+            Tetris tetris2 = new Tetris();
+            tetris2.game_begin();
+        }
     }
 
     public void game_begin() throws InterruptedException {
@@ -170,10 +175,9 @@ public class Tetrisd extends JFrame implements KeyListener {
             isrunning = true;
         }
         else if (n == 1){
-
         }
         else if (n == 2 || n == -1){
-
+            System.exit(0);
         }
     }
 
