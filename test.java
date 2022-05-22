@@ -1,17 +1,10 @@
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
 import java.util.Random;
-import java.util.Scanner;
 
-public class Tetris extends JFrame implements KeyListener {
+public class test extends JFrame implements KeyListener {
 
     private static final int gameRow = 25;
     private static final int gameColumn = 15;
@@ -31,17 +24,15 @@ public class Tetris extends JFrame implements KeyListener {
     int score = 0;
     boolean game_pause = false;
     int pause_times = 0;
-    int turn_times = 0;
 
 
     public void initWindow() {
-        this.setSize(750, 800);
+        this.setSize(600, 800);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         this.setTitle("Tetris");
-
 
 
        /*
@@ -85,63 +76,34 @@ public class Tetris extends JFrame implements KeyListener {
 
     public void initExplainPanel() {
         JPanel explain_right = new JPanel();
-        explain_right.setLayout(new GridLayout(10, 1));
+        explain_right.setLayout(new GridLayout(8, 1));
 
         gameState.setForeground(Color.BLUE);
         gameScore.setForeground(Color.RED);
-        explain_right.add(new JLabel(" "));
         explain_right.add(gameState);
         explain_right.add(gameScore);
 
         explain_right.add(new JLabel(" "));
-        explain_right.add(new JLabel(" HOW TO PLAY:"));
-        explain_right.getComponent(4).setForeground(new Color(85,107,47));
-        explain_right.getComponent(4).setFont(new Font("Verdana", Font.BOLD + Font.ITALIC, 22));
+        explain_right.add(new JLabel(" "));
         explain_right.add(new JLabel(" Move Left: 'A' or 'LEFT'"));
         explain_right.add(new JLabel(" Move Right: 'D' or 'RIGHT'"));
         explain_right.add(new JLabel(" Move Down: 'S' or 'DOWN'"));
         explain_right.add(new JLabel(" Rotate Clockwise: 'W' or 'UP'"));
-        for (int i = 5; i < 9; i++) {
-            explain_right.getComponent(i).setForeground(new Color(199,21,133));
-            explain_right.getComponent(i).setFont(new Font("Verdana", Font.BOLD + Font.ITALIC, 18));
-        }
+
         this.add(explain_right, BorderLayout.EAST);
     }
 
-
-//    public void initStartGame() {
-//        JPanel StartPanel = new JPanel();
-//        JButton button = new JButton("选择文件");
-//        // 监听button的选择路径
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//
-//            }
-//        });
-//        StartPanel.add(button);
-//    }
-
-    public Tetris() {
+    public test() {
         text = new JTextArea[gameRow][gameColumn];
         data = new int[gameRow][gameColumn];
         gameState = new JLabel("Game State: Playing");
-        gameState.setFont(new Font ("Verdana", Font.BOLD+ Font.ITALIC, 22));
         gameScore = new JLabel("Game Score: " + score);
-        gameScore.setFont(new Font ("Verdana", Font.BOLD+ Font.ITALIC, 22));
         initGamePanel();
         initExplainPanel();
         initWindow();
         isrunning = true;
-        allRect = new int[]{
-                0x0066, 0x0066, 0x0066, 0x0066,
-                0x4444, 0x0f00, 0x4444, 0x0f00,
-                0x0446, 0x00e8, 0x0c44, 0x02e0,
-                0x0226, 0x0470, 0x0322, 0x0071,
-                0x0264, 0x00c6, 0x0264, 0x00c6,
-                0x0462, 0x0036, 0x0462, 0x0036,
-                0x0464, 0x00e4, 0x04c4, 0x04e0
-        };
+        allRect = new int[]{0x0066, 0x4444, 0x0446, 0x0226, 0x0264, 0x0462, 0x0464};
+
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -164,22 +126,11 @@ public class Tetris extends JFrame implements KeyListener {
             game_run();
         }
         gameState.setText("Game State: Game over");
-        String [] options = {"RESTART","BACK TO MENU","QUIT THE GAME"};
-        int n = JOptionPane.showOptionDialog(null,"YOUR SCORE: " + score," ",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
-        if (n == 0) {
-            isrunning = true;
-        }
-        else if (n == 1){
-
-        }
-        else if (n == 2 || n == -1){
-
-        }
     }
 
     public void ranRect() {
         Random random = new Random();
-        rect = allRect[random.nextInt(28)];
+        rect = allRect[random.nextInt(7)];
     }
 
     public void game_run() throws InterruptedException {
@@ -258,7 +209,7 @@ public class Tetris extends JFrame implements KeyListener {
         for (int i=m; i>0;i--) {
             for (int j = 1; j < (gameColumn-1); j++) {
                 data[i][j]=data[i-1][j];
-//                text[i][j].getBackground() == text[i-1][j].getBackground();
+                //   text[i][j].getBackground()=text[i-1][j].getBackground();
             }
         }
         flash(m);
@@ -267,13 +218,13 @@ public class Tetris extends JFrame implements KeyListener {
     }
 
     public void flash(int m){
-        for (int i=m; i>3;i--) {
+        for (int i=m; i>3;i++) {
             for (int j = 0; j < (gameColumn-1); j++) {
-                if (data[i][j] == 0){
+                if (data[i][j]!=1){
                     text[i][j].setBackground(Color.GRAY);
                 }
-                else if (data[i][j] == 2) {
-                    text[i][j].setBackground(Color.BLACK);
+                else {
+                    text[i][j].setBackground(Color.BLUE);
                 }
             }
         }
@@ -309,29 +260,7 @@ public class Tetris extends JFrame implements KeyListener {
         a:for (int i=3;i>=0;i--){
             b:for (int j = 0; j < 4; j++){
                 if ((temp&rect)!=0){
-                    Color color = Color.red;
-                    if (rect == 0x0066){
-                        color = Color.red;
-                    }
-                    else if (rect == 0x4444||rect==0x0f00) {
-                        color = Color.cyan;
-                    }
-                    else if (rect == 0x0446||rect==0x00e8||rect==0x0c44||rect==0x02e0) {
-                        color = Color.green;
-                    }
-                    else if (rect == 0x0226||rect==0x0470||rect==0x0322||rect==0x0071) {
-                        color = Color.blue;
-                    }
-                    else if (rect == 0x0264||rect==0x00c6) {
-                        color = Color.orange;
-                    }
-                    else if (rect == 0x0462||rect==0x0036) {
-                        color = Color.yellow;
-                    }
-                    else if (rect == 0x0464||rect==0x00e4||rect==0x04c4||rect==0x04e0){
-                        color = Color.magenta;
-                    }
-                    text[m][n].setBackground(color);
+                    text[m][n].setBackground(Color.blue);
                 }
                 n++;
                 temp >>=1;
@@ -341,8 +270,34 @@ public class Tetris extends JFrame implements KeyListener {
         }
     }
 
+
+
+
     @Override
     public void keyTyped(KeyEvent e) {
+        if (e.getKeyChar()==' '){
+            if (!isrunning){
+                return;
+            }
+            pause_times++;
+            if (pause_times%2==1) {
+                game_pause = true;
+                gameState.setText("Game State: Pause");
+                String [] options = {"RESUME","OPTIONS","HOW TO PLAY","QUIT"};
+                int n = JOptionPane.showOptionDialog(null,"Pause"," ",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
+                //   JOptionPane.showMessageDialog(null,"游戏暂停");
+            }
+            if (pause_times%2==0){
+                game_pause=false;
+                gameState.setText("Game State: Playing");
+            }
+        }
+
+        if (e.getKeyCode()==38||e.getKeyCode()==87){
+            if (!isrunning){
+                return;
+            }
+        }
     }
 
     @Override
@@ -400,54 +355,7 @@ public class Tetris extends JFrame implements KeyListener {
             draw(x, y);
         }
 
-        if (e.getKeyCode()==KeyEvent.VK_P){
-            if (!isrunning){
-                return;
-            }
-            pause_times++;
-            game_pause = true;
-            gameState.setText("Game State: Pause");
-            String [] options = {"RESUME","SAVE AND LOAD","BACK TO MENU"};
-            int n = JOptionPane.showOptionDialog(null,"PAUSED"," ",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
-            if (n == 0 || n == -1) {
-                game_pause = false;
-                gameState.setText("Game State: Playing");
-            }
-            else if (n == 1){
 
-            }
-            else if (n == 2){
-
-            }
-        }
-
-        if (e.getKeyCode()==38||e.getKeyCode()==87){
-            if (!isrunning){
-                return;
-            }
-            int old;
-            for (old=0; old<allRect.length; old++){
-                if (rect==allRect[old]){
-                    break;
-                }
-            }
-            int next;
-            clear(x,y);
-            for (int i=0; i<28; i++){
-                if (old == i){
-                    if (i%4==3){
-                        next = allRect[i-3];
-                        rect = next;
-                    }
-                    else {
-                        next = allRect[i+1];
-                        rect = next;
-                    }
-                    break;
-                }
-            }
-            draw(x,y);
-        }
     }
 
     @Override
