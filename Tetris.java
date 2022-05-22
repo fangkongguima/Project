@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -32,7 +34,6 @@ public class Tetris extends JFrame implements KeyListener {
     boolean game_pause = false;
     int pause_times = 0;
     Color[][] color;
-    static boolean quit = false;
 
     public void initWindow() {
         this.setSize(750, 800);
@@ -111,20 +112,6 @@ public class Tetris extends JFrame implements KeyListener {
         this.add(explain_right, BorderLayout.EAST);
     }
 
-
-//    public void initStartGame() {
-//        JPanel StartPanel = new JPanel();
-//        JButton button = new JButton("选择文件");
-//        // 监听button的选择路径
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//
-//            }
-//        });
-//        StartPanel.add(button);
-//    }
-
     public Tetris() {
         text = new JTextArea[gameRow][gameColumn];
         data = new int[gameRow][gameColumn];
@@ -159,11 +146,6 @@ public class Tetris extends JFrame implements KeyListener {
         }
         tetris.game_begin();
         while (true) {
-//            for (int i = 5; i < 24; i++) {
-//                for (int j = 1; j < 14; j++) {
-//                    data[i][j] = 0;
-//                }
-//            }
             tetris.dispose();
             Tetris tetris2 = new Tetris();
             tetris2.game_begin();
@@ -181,13 +163,12 @@ public class Tetris extends JFrame implements KeyListener {
         String [] options = {"RESTART","BACK TO MENU","QUIT THE GAME"};
         int n = JOptionPane.showOptionDialog(null,"YOUR SCORE: " + score," ",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
         if (n == 0) {
-            isrunning = true;
+            //restart is realized in main
         }
         else if (n == 1){
-            setQuit(false);
+            //need to be done: back to the menu
         }
         else if (n == 2 || n == -1){
-            setQuit(true);
             System.exit(0);
         }
     }
@@ -378,10 +359,6 @@ public class Tetris extends JFrame implements KeyListener {
         }
     }
 
-    public static void setQuit(boolean quit) {
-        Tetris.quit = quit;
-    }
-
     public boolean canTurn(int a, int m, int n) {
         //create temp
         int temp = 0x8000;
@@ -401,6 +378,71 @@ public class Tetris extends JFrame implements KeyListener {
         }
         //if can turn
         return true;
+    }
+
+    public void save_panel() throws FileNotFoundException {
+        File file = new File("save_panel.txt");
+        PrintWriter output = new PrintWriter(file);
+        for (int i=0;i<gameRow;i++) {
+            for (int j = 0; j < gameColumn; j++) {
+                output.print(data[i][j]);
+                output.print(' ');
+
+            }
+            output.println();
+        }
+        for (int i=0;i<gameRow;i++) {
+            for (int j = 0; j < gameColumn; j++) {
+                output.print(color[i][j]);
+                output.print(' ');
+
+            }
+            output.println();
+        }
+
+        output.println(rect);
+        output.println(x+' '+ y);
+        output.println(score);
+        output.close();
+        //output.println(speed);
+    }
+
+    //不可用，两个问题需要解决
+    public void load_panel() throws FileNotFoundException {
+        File file = new File("save_panel.txt");
+        Scanner input = new Scanner(file);
+        int i=0, j=0, t = 1;
+        while(input.hasNext()){
+            if (i < gameRow){
+                // Color类存入txt时是什么格式？如何读取txt中的Color类？
+                //if (t ==0 ) data[i][j] = input.nextInt(); else color[i][j] = (Color) input.next();
+                if (j++ == gameColumn){
+                    j--;
+                    i++;
+                }
+            }
+            else {
+                if (t == 0){
+                    i = 0;
+                    j = 0;
+                }
+                //检测这里是否是16进制
+                if (t == 1) {
+                    rect = input.nextInt();
+                }
+                if (t == 2){
+                    x = input.nextInt();
+                    y = input.nextInt();
+                }
+                if (t == 3) {
+                    score = input.nextInt();
+                }
+                //if (t == 4) speed = input.nextInt();
+                t++;
+            }
+        }
+        input.close();
+
     }
 
     @Override
@@ -476,7 +518,11 @@ public class Tetris extends JFrame implements KeyListener {
                 gameState.setText("Game State: Playing");
             }
             else if (n == 1){
-
+                try {
+                    save_panel();
+                } catch (FileNotFoundException ex) {
+                    ex.printStackTrace();
+                }
             }
             else if (n == 2){
 
