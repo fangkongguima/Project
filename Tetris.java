@@ -31,10 +31,10 @@ public class Tetris extends JFrame implements KeyListener {
     int score = 0;
     boolean game_pause = false;
     int pause_times = 0;
-
+    Color[][] color;
 
     public void initWindow() {
-        this.setSize(880, 1000);
+        this.setSize(750, 800);
         this.setVisible(true);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,13 +66,16 @@ public class Tetris extends JFrame implements KeyListener {
             for (int j = 0; j < text[i].length; j++) {
                 text[i][j] = new JTextArea(gameRow, gameColumn);
                 text[i][j].setBackground(Color.GRAY);
+                color[i][j] = Color.gray;
                 text[i][j].addKeyListener(this);
                 if (j == 0 || j == text[i].length - 1 || i == text.length - 1) {
                     text[i][j].setBackground(Color.black);
-                    data[i][j] = 1;
+                    data[i][j] = 2;
+                    color[i][j] = Color.black;
                 }
                 if (i == 0 || i == 1 || i == 2 || i == 3) {
                     text[i][j].setBackground(Color.black);
+                    color[i][j] = Color.black;
                 }
                 text[i][j].setEditable(false);
                 game_main.add(text[i][j]);
@@ -124,6 +127,7 @@ public class Tetris extends JFrame implements KeyListener {
     public Tetris() {
         text = new JTextArea[gameRow][gameColumn];
         data = new int[gameRow][gameColumn];
+        color = new Color[gameRow][gameColumn];
         gameState = new JLabel("Game State: Playing");
         gameState.setFont(new Font ("Verdana", Font.BOLD+ Font.ITALIC, 22));
         gameScore = new JLabel("Game Score: " + score);
@@ -132,7 +136,15 @@ public class Tetris extends JFrame implements KeyListener {
         initExplainPanel();
         initWindow();
         isrunning = true;
-        allRect = new int[]{0x0066, 0x4444, 0x0446, 0x0226, 0x0264, 0x0462, 0x0464};
+        allRect = new int[]{
+                0x0066, 0x0066, 0x0066, 0x0066,
+                0x4444, 0x0f00, 0x4444, 0x0f00,
+                0x0446, 0x00e8, 0x0c44, 0x02e0,
+                0x0226, 0x0470, 0x0322, 0x0071,
+                0x0264, 0x00c6, 0x0264, 0x00c6,
+                0x0462, 0x0036, 0x0462, 0x0036,
+                0x0464, 0x00e4, 0x04c4, 0x04e0
+        };
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -170,7 +182,7 @@ public class Tetris extends JFrame implements KeyListener {
 
     public void ranRect() {
         Random random = new Random();
-        rect = allRect[random.nextInt(7)];
+        rect = allRect[random.nextInt(28)];
     }
 
     public void game_run() throws InterruptedException {
@@ -184,7 +196,7 @@ public class Tetris extends JFrame implements KeyListener {
             } else {
                 if (!canFall(x, y)) {
                     changeData(x, y);
-                    for (int j = x; j < x + 4; j++) {
+                    for (int j = x; j < Math.min(x + 4,gameRow-1); j++) {
                         int sum = 0;
 
                         for (int k = 1; k < (gameColumn - 1); k++){
@@ -217,7 +229,7 @@ public class Tetris extends JFrame implements KeyListener {
         a:for (int i=3;i>=0;i--){
             b:for (int j = 0; j < 4; j++){
                 if ((temp&rect)!=0){
-                    if (data[m+1][n] == 1) {
+                    if (data[m+1][n] == 1||data[m+1][n] == 2) {
                         return false;
                     }
                 }
@@ -232,10 +244,30 @@ public class Tetris extends JFrame implements KeyListener {
 
     public void changeData(int m,int n){
         int temp = 0x8000;
+        Color t = Color.red;
+        if (rect == 0x0066) t = Color.red;
+        else if (rect == 0x4444||rect==0x0f00)  t = Color.cyan;
+        else if (rect == 0x0446||rect==0x00e8||rect==0x0c44||rect==0x02e0) {
+                        t = Color.green;
+                    }
+        else if (rect == 0x0226||rect==0x0470||rect==0x0322||rect==0x0071) {
+                        t = Color.blue;
+                    }
+        else if (rect == 0x0264||rect==0x00c6) {
+                        t = Color.orange;
+                    }
+        else if (rect == 0x0462||rect==0x0036) {
+                        t = Color.yellow;
+                    }
+        else if (rect == 0x0464||rect==0x00e4||rect==0x04c4||rect==0x04e0){
+                        t = Color.magenta;
+                    }
+
         a:for (int i=3;i>=0;i--){
             b:for (int j = 0; j < 4; j++){
                 if ((temp&rect)!=0){
                     data[m][n] = 1;
+                    color[m][n] = t;
                 }
                 n++;
                 temp >>=1;
@@ -246,10 +278,10 @@ public class Tetris extends JFrame implements KeyListener {
     }
 
     public void removeRow(int m){
-        for (int i=m; i>0;i--) {
+        for (int i=m; i>4;i--) {
             for (int j = 1; j < (gameColumn-1); j++) {
                 data[i][j]=data[i-1][j];
-//                text[i][j].getBackground() == text[i-1][j].getBackground();
+                color[i][j] = color[i-1][j];
             }
         }
         flash(m);
@@ -260,12 +292,10 @@ public class Tetris extends JFrame implements KeyListener {
     public void flash(int m){
         for (int i=m; i>3;i--) {
             for (int j = 0; j < (gameColumn-1); j++) {
-                if (data[i][j] == 0){
+                /*if (data[i][j] == 0){
                     text[i][j].setBackground(Color.GRAY);
-                }
-                else if (data[i][j] == 2) {
-                    text[i][j].setBackground(Color.BLACK);
-                }
+                }*/
+                text[i][j].setBackground(color[i][j]);
             }
         }
     }
@@ -283,9 +313,11 @@ public class Tetris extends JFrame implements KeyListener {
             b:for (int j = 0; j < 4; j++){
                 if ((temp&rect)!=0&&m>3){
                     text[m][n].setBackground(Color.GRAY);
+                    color[i][j] = Color.GRAY;
                 }
                 else if((temp&rect)!=0&&m<4){
                     text[m][n].setBackground(Color.black);
+                    color[i][j] = Color.black;
                 }
                 n++;
                 temp >>=1;
@@ -304,22 +336,22 @@ public class Tetris extends JFrame implements KeyListener {
                     if (rect == 0x0066){
                         color = Color.red;
                     }
-                    else if (rect == 0x4444) {
+                    else if (rect == 0x4444||rect==0x0f00) {
                         color = Color.cyan;
                     }
-                    else if (rect == 0x0446) {
+                    else if (rect == 0x0446||rect==0x00e8||rect==0x0c44||rect==0x02e0) {
                         color = Color.green;
                     }
-                    else if (rect == 0x0226) {
+                    else if (rect == 0x0226||rect==0x0470||rect==0x0322||rect==0x0071) {
                         color = Color.blue;
                     }
-                    else if (rect == 0x0264) {
+                    else if (rect == 0x0264||rect==0x00c6) {
                         color = Color.orange;
                     }
-                    else if (rect == 0x0462) {
+                    else if (rect == 0x0462||rect==0x0036) {
                         color = Color.yellow;
                     }
-                    else if (rect == 0x0464){
+                    else if (rect == 0x0464||rect==0x00e4||rect==0x04c4||rect==0x04e0){
                         color = Color.magenta;
                     }
                     text[m][n].setBackground(color);
@@ -330,6 +362,27 @@ public class Tetris extends JFrame implements KeyListener {
             m++;
             n=n-4;
         }
+    }
+
+    public boolean canTurn(int a,int m,int n) {
+        //create temp
+        int temp = 0x8000;
+        //for each to loop all
+        for (int i = 0;i < 4;i++) {
+            for (int j = 0;j < 4;j++) {
+                if ((a & temp) != 0) {
+                    if (data[m][n] == 1||data[m][n]==2) {
+                        return false;
+                    }
+                }
+                n++;
+                temp >>= 1;
+            }
+            m++;
+            n = n -4;
+        }
+        //if can turn
+        return true;
     }
 
     @Override
@@ -346,7 +399,7 @@ public class Tetris extends JFrame implements KeyListener {
             a:for (int i=x;i<x+4;i++){
                 b:for (int j=y; j<y+4; j++){
                     if ((temp&rect)!=0){
-                        if(data[i][j-1]==1){
+                        if(data[i][j-1]==1||data[i][j-1]==2){
                             return;
                         }
                     }
@@ -367,7 +420,7 @@ public class Tetris extends JFrame implements KeyListener {
                 b:
                 for (int j = y; j < y + 4; j++) {
                     if ((temp & rect) != 0) {
-                        if (data[i][j + 1] == 1) {
+                        if (data[i][j + 1] == 1||data[i][j+1]==2) {
                             return;
                         }
                     }
@@ -416,6 +469,32 @@ public class Tetris extends JFrame implements KeyListener {
             if (!isrunning){
                 return;
             }
+            int old;
+            for (old=0; old<allRect.length; old++){
+                if (rect==allRect[old]){
+                    break;
+                }
+            }
+            int next;
+            clear(x,y);
+            for (int i=0; i<28; i++){
+                if (old == i){
+                    if (i%4==3){
+                        next = allRect[i-3];
+                        if (canTurn(next, x, y)) {
+                            rect = next;
+                        }
+                    }
+                    else {
+                        next = allRect[i+1];
+                        if (canTurn(next, x, y)) {
+                            rect = next;
+                        }
+                    }
+                    break;
+                }
+            }
+            draw(x,y);
         }
     }
 
