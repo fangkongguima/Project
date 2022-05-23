@@ -1,10 +1,5 @@
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -27,15 +22,13 @@ public class Tetris extends JFrame implements KeyListener {
     boolean isrunning;
     int[] allRect;
     int rect;
-    int time = 1000;
     int x;
     int y;
     int score = 0;
     boolean game_pause = false;
     int pause_times = 0;
     Color[][] color;
-    int millis;
-    boolean frame_on;
+    static int millis = 1000;
 
     public void initWindow() {
         this.setSize(750, 800);
@@ -56,8 +49,6 @@ public class Tetris extends JFrame implements KeyListener {
         int width = this.getWidth();
         setLocation(screenWidth/2-width/2,screenHeight/2-height/2);
         */
-
-
         //close the frame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //make it visible
@@ -100,9 +91,11 @@ public class Tetris extends JFrame implements KeyListener {
         explain_right.add(gameScore);
 
         explain_right.add(new JLabel(" "));
-        explain_right.add(new JLabel(" HOW TO PLAY:"));
+        explain_right.getComponent(3).setForeground(new Color(55, 47, 107));
+        explain_right.getComponent(3).setFont(new Font("Verdana", Font.BOLD + Font.ITALIC, 22));
+        explain_right.add(new JLabel(" Press P to Pause"));
         explain_right.getComponent(4).setForeground(new Color(85,107,47));
-        explain_right.getComponent(4).setFont(new Font("Verdana", Font.BOLD + Font.ITALIC, 22));
+        explain_right.getComponent(4).setFont(new Font("Verdana", Font.BOLD + Font.ITALIC, 18));
         explain_right.add(new JLabel(" Move Left: 'A' or 'LEFT'"));
         explain_right.add(new JLabel(" Move Right: 'D' or 'RIGHT'"));
         explain_right.add(new JLabel(" Move Down: 'S' or 'DOWN'"));
@@ -139,13 +132,13 @@ public class Tetris extends JFrame implements KeyListener {
 
     public static void main(String[] args) throws InterruptedException {
         frame frame = new frame();
-//        try {
-//            MusicPlayer player = new MusicPlayer("src\\Tetris Background Music.wav");
-//            player.setVolumn(6f).play();
-//            player.setLoop(true);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            MusicPlayer player = new MusicPlayer("src\\Tetris Background Music.wav");
+            player.setVolumn(6f).play();
+            player.setLoop(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Tetris tetris = new Tetris();
         while (!frame.isStartGAME()) {
             tetris.setVisible(false);
@@ -192,7 +185,7 @@ public class Tetris extends JFrame implements KeyListener {
         x = 0;
         y = 5;
         for (int i = 0; i < gameRow; i++) {
-            Thread.sleep(1000);
+            Thread.sleep(millis);
             if (game_pause) {
                 i--;
             } else {
@@ -433,7 +426,6 @@ public class Tetris extends JFrame implements KeyListener {
         //output.println(speed);
     }
 
-    //不可用，两个问题需要解决
     public void load_panel() throws FileNotFoundException {
         File file = new File("save_panel.txt");
         Scanner input = new Scanner(file);
@@ -484,11 +476,10 @@ public class Tetris extends JFrame implements KeyListener {
             }
         }
         input.close();
-
     }
 
-    public void setMillis(int millis) {
-        this.millis = millis;
+    public static void setMillis(int millis) {
+        Tetris.millis = millis;
     }
 
 
