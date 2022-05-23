@@ -34,6 +34,8 @@ public class Tetris extends JFrame implements KeyListener {
     boolean game_pause = false;
     int pause_times = 0;
     Color[][] color;
+    int millis;
+    boolean frame_on;
 
     public void initWindow() {
         this.setSize(750, 800);
@@ -136,14 +138,20 @@ public class Tetris extends JFrame implements KeyListener {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        frame frame = new frame();
+//        try {
+//            MusicPlayer player = new MusicPlayer("src\\Tetris Background Music.wav");
+//            player.setVolumn(6f).play();
+//            player.setLoop(true);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         Tetris tetris = new Tetris();
-        try {
-            MusicPlayer player = new MusicPlayer("src\\Tetris Background Music.wav");
-            player.setVolumn(6f).play();
-            player.setLoop(true);
-        } catch (Exception e) {
-            e.printStackTrace();
+        while (!frame.isStartGAME()) {
+            tetris.setVisible(false);
         }
+        frame.setVisible(false);
+        tetris.setVisible(true);
         tetris.game_begin();
         while (true) {
             tetris.dispose();
@@ -151,6 +159,7 @@ public class Tetris extends JFrame implements KeyListener {
             tetris2.game_begin();
         }
     }
+
 
     public void game_begin() throws InterruptedException {
         while (true) {
@@ -166,7 +175,7 @@ public class Tetris extends JFrame implements KeyListener {
             //restart is realized in main
         }
         else if (n == 1){
-            //need to be done: back to the menu
+
         }
         else if (n == 2 || n == -1){
             System.exit(0);
@@ -183,7 +192,7 @@ public class Tetris extends JFrame implements KeyListener {
         x = 0;
         y = 5;
         for (int i = 0; i < gameRow; i++) {
-            Thread.sleep(time);
+            Thread.sleep(1000);
             if (game_pause) {
                 i--;
             } else {
@@ -391,11 +400,28 @@ public class Tetris extends JFrame implements KeyListener {
             }
             output.println();
         }
-        for (int i=0;i<gameRow;i++) {
-            for (int j = 0; j < gameColumn; j++) {
-                output.print(color[i][j]);
+        for (int i = 0;i<gameRow;i++){
+            for (int j = 0;j<gameColumn;j++){
+                if (Color.gray.equals(color[i][j])) {
+                    output.print(0);
+                } else if (Color.black.equals(color[i][j])) {
+                    output.print(1);
+                } else if (Color.red.equals(color[i][j])) {
+                    output.print(2);
+                } else if (Color.cyan.equals(color[i][j])) {
+                    output.print(3);
+                } else if (Color.green.equals(color[i][j])) {
+                    output.print(4);
+                } else if (Color.blue.equals(color[i][j])) {
+                    output.print(5);
+                } else if (Color.orange.equals(color[i][j])) {
+                    output.print(6);
+                } else if (Color.yellow.equals(color[i][j])) {
+                    output.print(7);
+                } else if (Color.magenta.equals(color[i][j])) {
+                    output.print(8);
+                }
                 output.print(' ');
-
             }
             output.println();
         }
@@ -411,11 +437,27 @@ public class Tetris extends JFrame implements KeyListener {
     public void load_panel() throws FileNotFoundException {
         File file = new File("save_panel.txt");
         Scanner input = new Scanner(file);
-        int i=0, j=0, t = 1;
+        int i=0, j=0;
+        int t = 0;
         while(input.hasNext()){
             if (i < gameRow){
                 // Color类存入txt时是什么格式？如何读取txt中的Color类？
-                //if (t ==0 ) data[i][j] = input.nextInt(); else color[i][j] = (Color) input.next();
+                for (int l = 0;i<gameRow;i++){
+                    for (int m = 0;j<gameColumn;j++){
+                        t = input.nextInt();
+                        switch (t){
+                            case 0: color[i][j] = Color.gray;
+                            case 1: color[i][j] = Color.black;
+                            case 2: color[i][j] = Color.red;
+                            case 3: color[i][j] = Color.cyan;
+                            case 4: color[i][j] = Color.green;
+                            case 5: color[i][j] = Color.blue;
+                            case 6: color[i][j] = Color.orange;
+                            case 7: color[i][j] = Color.yellow;
+                            case 8: color[i][j] = Color.magenta;
+                        }
+                    }
+                }
                 if (j++ == gameColumn){
                     j--;
                     i++;
@@ -444,6 +486,11 @@ public class Tetris extends JFrame implements KeyListener {
         input.close();
 
     }
+
+    public void setMillis(int millis) {
+        this.millis = millis;
+    }
+
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -517,15 +564,15 @@ public class Tetris extends JFrame implements KeyListener {
                 game_pause = false;
                 gameState.setText("Game State: Playing");
             }
-            else if (n == 1){
+            else if (n == 1) {
                 try {
                     save_panel();
                 } catch (FileNotFoundException ex) {
                     ex.printStackTrace();
                 }
             }
-            else if (n == 2){
-
+            else if (n == 2) {
+                //add back to menu
             }
         }
 
